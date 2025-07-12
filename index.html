@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hi Lang</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #ffcce6;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .centered {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 2;
+    }
+    .floating-heart {
+      font-size: 2em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .floating-heart.center {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .floating-heart.top {
+      top: 20px;
+      transform: translateX(-50%);
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .gif {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+    .message {
+      font-size: 2em;
+      color: #c2185b;
+      margin-bottom: 15px;
+    }
+    .audio-btn {
+      padding: 10px 20px;
+      background: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .gif-loop img {
+      width: 200px;
+      margin: 10px auto;
+      display: none;
+      cursor: pointer;
+    }
+    .gif-loop img.active {
+      display: block;
+    }
+    .falling {
+      position: absolute;
+      top: -50px;
+      width: 30px;
+      height: 30px;
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Cherry_blossom_pink.svg/1024px-Cherry_blossom_pink.svg.png');
+      background-size: cover;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0); }
+      100% { transform: translateY(110vh) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" loop>
+    <source src="Fallen.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="clickSound">
+    <source src="Click - Sound Effect (HD).mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="voiceAudio" controls style="display: none;">
+    <source src="New Recording 177.mp3" type="audio/mpeg">
+    Your browser does not support audio.
+  </audio>
+
+  <button id="mainHeart" class="floating-heart center" onclick="handleHeartClick()">❤️</button>
+
+  <div class="centered" id="step0"></div>
+
+  <div class="centered" id="step1" style="display: none;">
+    <img class="gif" src="shy.gif">
+    <div class="message">Hi, lang.♡︎</div>
+  </div>
+
+  <div class="centered" id="step2" style="display: none;">
+    <img class="gif" src="missing bubu.gif">
+    <div class="message">HAHHAHAHHAHHAHA CHUY KAAYO SA. 😎 pambawi ni kay boring kaayo akoang voice message uy. Maynalang malingaw ka tan aw sa mga stickers hehe. Eclick lang ang stickers ig play nmo sa audio po. </div>
+    <button class="audio-btn" onclick="playVoice()">Play Audio</button>
+  </div>
+
+  <div class="centered" id="step3" style="display: none;">
+    <div class="gif-loop" id="gifContainer" style="margin-bottom: 20px;"></div>
+    <audio id="voiceFinal" controls autoplay>
+      <source src="New Recording 177.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById('bgMusic');
+    const clickSound = document.getElementById('clickSound');
+    const voiceFinal = document.getElementById('voiceFinal');
+    const gifContainer = document.getElementById('gifContainer');
+    const mainHeart = document.getElementById('mainHeart');
+
+    let step = 0;
+    let currentIndex = 0;
+    let allGifs = [];
+
+    function handleHeartClick() {
+      clickSound.play();
+      step++;
+      if (step === 1) {
+        document.getElementById('step0').style.display = 'none';
+        document.getElementById('step1').style.display = 'block';
+        mainHeart.classList.remove('center');
+        mainHeart.classList.add('top');
+        bgMusic.play();
+      } else if (step === 2) {
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+      }
+    }
+
+    function playVoice() {
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = 'block';
+      bgMusic.pause();
+
+      const gifs = [
+        "wondering.gif",
+        "stare.gif",
+        "heart.gif",
+        "sweet.gif",
+        "cuddle.gif",
+        "together.gif",
+        "picnic.gif",
+        "guitar.gif",
+        "thinking of her.gif"
+      ];
+
+      gifs.forEach((src, i) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.addEventListener('click', () => {
+          allGifs.forEach(g => g.classList.remove('active'));
+          currentIndex = (currentIndex + 1) % allGifs.length;
+          allGifs[currentIndex].classList.add('active');
+        });
+        gifContainer.appendChild(img);
+      });
+
+      allGifs = gifContainer.querySelectorAll('img');
+      if (allGifs.length > 0) {
+        allGifs[0].classList.add('active');
+      }
+    }
+
+    for (let i = 0; i < 40; i++) {
+      let flower = document.createElement('div');
+      flower.className = 'falling';
+      flower.style.left = Math.random() * 100 + 'vw';
+      flower.style.animationDuration = (5 + Math.random() * 5) + 's';
+      flower.style.animationDelay = Math.random() * 5 + 's';
+      document.body.appendChild(flower);
+    }
+  </script>
+</body>
+</html>
